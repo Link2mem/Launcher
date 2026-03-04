@@ -1,0 +1,52 @@
+name: images builder
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  generate-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install ImageMagick
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+
+      - name: Generate Android Icons
+        run: |
+          curl -L "https://wallpapers.com/images/hd/black-anime-pictures-w2i76mvvgznu4fxt.jpg" -o base_icon.jpg
+          
+          mkdir -p app/src/main/res/mipmap-mdpi
+          mkdir -p app/src/main/res/mipmap-hdpi
+          mkdir -p app/src/main/res/mipmap-xhdpi
+          mkdir -p app/src/main/res/mipmap-xxhdpi
+          mkdir -p app/src/main/res/mipmap-xxxhdpi
+
+          convert base_icon.jpg -resize 48x48 app/src/main/res/mipmap-mdpi/ic_launcher.png
+          convert base_icon.jpg -resize 72x72 app/src/main/res/mipmap-hdpi/ic_launcher.png
+          convert base_icon.jpg -resize 96x96 app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          convert base_icon.jpg -resize 144x144 app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          convert base_icon.jpg -resize 192x192 app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          
+          cp app/src/main/res/mipmap-mdpi/ic_launcher.png app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+          cp app/src/main/res/mipmap-hdpi/ic_launcher.png app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+          cp app/src/main/res/mipmap-xhdpi/ic_launcher.png app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+          cp app/src/main/res/mipmap-xxhdpi/ic_launcher.png app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+          cp app/src/main/res/mipmap-xxxhdpi/ic_launcher.png app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+
+      - name: Push Icons to Repository
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add app/src/main/res/mipmap-*
+          git commit -m "Auto-generated icons [skip ci]" || echo "No changes to commit"
+          git push
