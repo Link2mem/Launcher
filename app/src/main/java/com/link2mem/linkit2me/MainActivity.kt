@@ -1,14 +1,14 @@
 package com.link2mem.linkit2me
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.material3.Text
 
-class MainActivity : ComponentActivity() {
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import android.widget.TextView
+
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            Text(text = "Welcome to linkit2me, Link2mem!")
-        }
+        val text = TextView(this)
+        text.text = "Linkit2me works!"
+        setContentView(text)
     }
 }
